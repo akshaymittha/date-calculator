@@ -7,20 +7,43 @@
 
 <h2>Date Difference Calculator</h2>
 
-<label>Start Date:</label>
+<label>Start Date (DD-MM-YYYY):</label>
 <input type="date" id="start"><br><br>
 
-<label>End Date:</label>
+<label>End Date (DD-MM-YYYY):</label>
 <input type="date" id="end"><br><br>
 
 <button onclick="calculate()">Calculate</button>
 
 <h3 id="result"></h3>
+<h4 id="selectedDates"></h4>
 
 <script>
+
+function formatDate(date) {
+    let day = String(date.getDate()).padStart(2, '0');
+    let month = String(date.getMonth() + 1).padStart(2, '0');
+    let year = date.getFullYear();
+    return day + "-" + month + "-" + year;
+}
+
 function calculate() {
-    let start = new Date(document.getElementById("start").value);
-    let end = new Date(document.getElementById("end").value);
+
+    let startInput = document.getElementById("start").value;
+    let endInput = document.getElementById("end").value;
+
+    if (!startInput || !endInput) {
+        alert("Please select both dates");
+        return;
+    }
+
+    let start = new Date(startInput);
+    let end = new Date(endInput);
+
+    if (end < start) {
+        alert("End date must be after Start date");
+        return;
+    }
 
     let years = end.getFullYear() - start.getFullYear();
     let months = end.getMonth() - start.getMonth();
@@ -28,7 +51,8 @@ function calculate() {
 
     if (days < 0) {
         months--;
-        days += new Date(end.getFullYear(), end.getMonth(), 0).getDate();
+        let previousMonth = new Date(end.getFullYear(), end.getMonth(), 0);
+        days += previousMonth.getDate();
     }
 
     if (months < 0) {
@@ -40,7 +64,12 @@ function calculate() {
         years + " Years, " +
         months + " Months, " +
         days + " Days";
+
+    document.getElementById("selectedDates").innerHTML =
+        "From: " + formatDate(start) +
+        "<br>To: " + formatDate(end);
 }
+
 </script>
 
 </body>
