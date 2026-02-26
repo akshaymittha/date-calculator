@@ -2,40 +2,41 @@
 <html>
 <head>
     <title>Date Difference Calculator</title>
+
+    <!-- Flatpickr CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 </head>
 <body>
 
 <h2>Date Difference Calculator</h2>
 
-<label>Start Date (dd/mm/yyyy):</label>
-<input type="text" id="start" placeholder="dd/mm/yyyy"><br><br>
+<label>Start Date:</label>
+<input type="text" id="start"><br><br>
 
-<label>End Date (dd/mm/yyyy):</label>
-<input type="text" id="end" placeholder="dd/mm/yyyy"><br><br>
+<label>End Date:</label>
+<input type="text" id="end"><br><br>
 
 <button onclick="calculate()">Calculate</button>
 
 <h3 id="result"></h3>
-<h4 id="selectedDates"></h4>
+
+<!-- Flatpickr JS -->
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
 <script>
 
+// Enable calendar with dd/mm/yyyy format
+flatpickr("#start", {
+    dateFormat: "d/m/Y"
+});
+
+flatpickr("#end", {
+    dateFormat: "d/m/Y"
+});
+
 function parseDate(input) {
     let parts = input.split("/");
-    if (parts.length !== 3) return null;
-
-    let day = parseInt(parts[0], 10);
-    let month = parseInt(parts[1], 10) - 1; // JS months start from 0
-    let year = parseInt(parts[2], 10);
-
-    return new Date(year, month, day);
-}
-
-function formatDate(date) {
-    let day = String(date.getDate()).padStart(2, '0');
-    let month = String(date.getMonth() + 1).padStart(2, '0');
-    let year = date.getFullYear();
-    return day + "/" + month + "/" + year;
+    return new Date(parts[2], parts[1] - 1, parts[0]);
 }
 
 function calculate() {
@@ -43,13 +44,13 @@ function calculate() {
     let startInput = document.getElementById("start").value;
     let endInput = document.getElementById("end").value;
 
-    let start = parseDate(startInput);
-    let end = parseDate(endInput);
-
-    if (!start || !end || isNaN(start) || isNaN(end)) {
-        alert("Please enter dates in dd/mm/yyyy format");
+    if (!startInput || !endInput) {
+        alert("Please select both dates");
         return;
     }
+
+    let start = parseDate(startInput);
+    let end = parseDate(endInput);
 
     if (end < start) {
         alert("End date must be after Start date");
@@ -75,10 +76,6 @@ function calculate() {
         years + " Years, " +
         months + " Months, " +
         days + " Days";
-
-    document.getElementById("selectedDates").innerHTML =
-        "From: " + formatDate(start) +
-        "<br>To: " + formatDate(end);
 }
 
 </script>
