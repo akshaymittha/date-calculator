@@ -1,9 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Date Difference Calculator</title>
+
+    <!-- Flatpickr CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 50px;
+        }
+
+        input {
+            padding: 8px;
+            width: 200px;
+            font-size: 14px;
+        }
+
+        button {
+            padding: 8px 15px;
+            margin: 5px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        #calcBtn {
+            background-color: #28a745;
+            color: white;
+            border: none;
+        }
+
+        #clearBtn {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+        }
+
+        h3 {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<h2>Date Difference Calculator</h2>
+
+<label>Start Date:</label><br>
+<input type="text" id="start" placeholder="dd/mm/yyyy"><br><br>
+
+<label>End Date:</label><br>
+<input type="text" id="end" placeholder="dd/mm/yyyy"><br><br>
+
+<button onclick="calculate()" id="calcBtn">Calculate</button>
+<button onclick="clearAll()" id="clearBtn" disabled>Clear</button>
+
+<h3 id="result"></h3>
+<h4 id="selectedDates"></h4>
+
+<!-- Flatpickr JS -->
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
 <script>
 
-// Get today's date in yyyy-mm-dd format
+// Get today's date
 let today = new Date();
 
-// Initialize Flatpickr with maxDate restriction
+// Initialize Flatpickr with dd/mm/yyyy format and no future dates
 const startPicker = flatpickr("#start", {
     dateFormat: "d/m/Y",
     maxDate: "today"
@@ -14,11 +78,13 @@ const endPicker = flatpickr("#end", {
     maxDate: "today"
 });
 
+// Convert dd/mm/yyyy to Date object
 function parseDate(input) {
     let parts = input.split("/");
     return new Date(parts[2], parts[1] - 1, parts[0]);
 }
 
+// Format Date object to dd/mm/yyyy
 function formatDate(date) {
     let day = String(date.getDate()).padStart(2, '0');
     let month = String(date.getMonth() + 1).padStart(2, '0');
@@ -90,3 +156,6 @@ function clearAll() {
 }
 
 </script>
+
+</body>
+</html>
