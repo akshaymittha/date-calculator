@@ -67,15 +67,24 @@
 // Get today's date
 let today = new Date();
 
-// Initialize Flatpickr with dd/mm/yyyy format and no future dates
+// Enable recalculation when user edits date
+function enableRecalculate() {
+    document.getElementById("calcBtn").disabled = false;
+    document.getElementById("result").innerHTML = "";
+    document.getElementById("selectedDates").innerHTML = "";
+}
+
+// Initialize Flatpickr with dd/mm/yyyy format
 const startPicker = flatpickr("#start", {
     dateFormat: "d/m/Y",
-    maxDate: "today"
+    maxDate: "today",
+    onChange: enableRecalculate
 });
 
 const endPicker = flatpickr("#end", {
     dateFormat: "d/m/Y",
-    maxDate: "today"
+    maxDate: "today",
+    onChange: enableRecalculate
 });
 
 // Convert dd/mm/yyyy to Date object
