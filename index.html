@@ -1,39 +1,17 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Date Difference Calculator</title>
-
-    <!-- Flatpickr CSS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-</head>
-<body>
-
-<h2>Date Difference Calculator</h2>
-
-<label>Start Date:</label>
-<input type="text" id="start"><br><br>
-
-<label>End Date:</label>
-<input type="text" id="end"><br><br>
-
-<button onclick="calculate()" id="calcBtn">Calculate</button>
-<button onclick="clearAll()" id="clearBtn" disabled>Clear</button>
-
-<h3 id="result"></h3>
-<h4 id="selectedDates"></h4>
-
-<!-- Flatpickr JS -->
-<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-
 <script>
 
-// Initialize Flatpickr
+// Get today's date in yyyy-mm-dd format
+let today = new Date();
+
+// Initialize Flatpickr with maxDate restriction
 const startPicker = flatpickr("#start", {
-    dateFormat: "d/m/Y"
+    dateFormat: "d/m/Y",
+    maxDate: "today"
 });
 
 const endPicker = flatpickr("#end", {
-    dateFormat: "d/m/Y"
+    dateFormat: "d/m/Y",
+    maxDate: "today"
 });
 
 function parseDate(input) {
@@ -60,6 +38,11 @@ function calculate() {
 
     let start = parseDate(startInput);
     let end = parseDate(endInput);
+
+    if (end > today) {
+        alert("End date cannot be greater than today");
+        return;
+    }
 
     if (end < start) {
         alert("End date must be after Start date");
@@ -90,7 +73,6 @@ function calculate() {
         "From: " + formatDate(start) +
         "<br>To: " + formatDate(end);
 
-    // Disable Calculate button and enable Clear
     document.getElementById("calcBtn").disabled = true;
     document.getElementById("clearBtn").disabled = false;
 }
@@ -103,12 +85,8 @@ function clearAll() {
     document.getElementById("result").innerHTML = "";
     document.getElementById("selectedDates").innerHTML = "";
 
-    // Enable Calculate again
     document.getElementById("calcBtn").disabled = false;
     document.getElementById("clearBtn").disabled = true;
 }
 
 </script>
-
-</body>
-</html>
