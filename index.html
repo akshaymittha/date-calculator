@@ -19,13 +19,14 @@
 <button onclick="calculate()">Calculate</button>
 
 <h3 id="result"></h3>
+<h4 id="selectedDates"></h4>
 
 <!-- Flatpickr JS -->
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
 <script>
 
-// Enable calendar with dd/mm/yyyy format
+// Enable calendar with forced dd/mm/yyyy format
 flatpickr("#start", {
     dateFormat: "d/m/Y"
 });
@@ -37,6 +38,13 @@ flatpickr("#end", {
 function parseDate(input) {
     let parts = input.split("/");
     return new Date(parts[2], parts[1] - 1, parts[0]);
+}
+
+function formatDate(date) {
+    let day = String(date.getDate()).padStart(2, '0');
+    let month = String(date.getMonth() + 1).padStart(2, '0');
+    let year = date.getFullYear();
+    return day + "/" + month + "/" + year;
 }
 
 function calculate() {
@@ -76,6 +84,10 @@ function calculate() {
         years + " Years, " +
         months + " Months, " +
         days + " Days";
+
+    document.getElementById("selectedDates").innerHTML =
+        "From: " + formatDate(start) +
+        "<br>To: " + formatDate(end);
 }
 
 </script>
