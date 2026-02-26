@@ -16,7 +16,8 @@
 <label>End Date:</label>
 <input type="text" id="end"><br><br>
 
-<button onclick="calculate()">Calculate</button>
+<button onclick="calculate()" id="calcBtn">Calculate</button>
+<button onclick="clearAll()" id="clearBtn" disabled>Clear</button>
 
 <h3 id="result"></h3>
 <h4 id="selectedDates"></h4>
@@ -26,12 +27,12 @@
 
 <script>
 
-// Enable calendar with forced dd/mm/yyyy format
-flatpickr("#start", {
+// Initialize Flatpickr
+const startPicker = flatpickr("#start", {
     dateFormat: "d/m/Y"
 });
 
-flatpickr("#end", {
+const endPicker = flatpickr("#end", {
     dateFormat: "d/m/Y"
 });
 
@@ -88,6 +89,23 @@ function calculate() {
     document.getElementById("selectedDates").innerHTML =
         "From: " + formatDate(start) +
         "<br>To: " + formatDate(end);
+
+    // Disable Calculate button and enable Clear
+    document.getElementById("calcBtn").disabled = true;
+    document.getElementById("clearBtn").disabled = false;
+}
+
+function clearAll() {
+
+    startPicker.clear();
+    endPicker.clear();
+
+    document.getElementById("result").innerHTML = "";
+    document.getElementById("selectedDates").innerHTML = "";
+
+    // Enable Calculate again
+    document.getElementById("calcBtn").disabled = false;
+    document.getElementById("clearBtn").disabled = true;
 }
 
 </script>
