@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Date Difference Calculator</title>
+</head>
+<body>
+
+<h2>Date Difference Calculator</h2>
+
+<label>Start Date:</label>
+<input type="date" id="start"><br><br>
+
+<label>End Date:</label>
+<input type="date" id="end"><br><br>
+
+<button onclick="calculate()">Calculate</button>
+
+<h3 id="result"></h3>
+
+<script>
+function calculate() {
+    let start = new Date(document.getElementById("start").value);
+    let end = new Date(document.getElementById("end").value);
+
+    let years = end.getFullYear() - start.getFullYear();
+    let months = end.getMonth() - start.getMonth();
+    let days = end.getDate() - start.getDate();
+
+    if (days < 0) {
+        months--;
+        days += new Date(end.getFullYear(), end.getMonth(), 0).getDate();
+    }
+
+    if (months < 0) {
+        years--;
+        months += 12;
+    }
+
+    document.getElementById("result").innerHTML =
+        years + " Years, " +
+        months + " Months, " +
+        days + " Days";
+}
+</script>
+
+</body>
+</html>
