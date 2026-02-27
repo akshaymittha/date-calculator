@@ -140,11 +140,13 @@ function calculate() {
         months += 12;
     }
 
-    document.getElementById("result").innerHTML =
-        years + " Years, " +
-        months + " Months, " +
-        days + " Days";
+    // 🔥 Convert everything to total months
+    let totalMonths = (years * 12) + months;
 
+    // ✅ Display only Months & Days
+    document.getElementById("result").innerHTML =
+        totalMonths + " Months, " +
+        days + " Days";
 
     document.getElementById("selectedDates").innerHTML =
         "From: " + formatDate(start) +
@@ -153,6 +155,7 @@ function calculate() {
     document.getElementById("calcBtn").disabled = true;
     document.getElementById("clearBtn").disabled = false;
 }
+
 
 function clearAll() {
 
