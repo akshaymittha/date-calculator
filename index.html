@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Date Difference Calculator</title>
+    <title>Gold Loan Calculator</title>
 
     <!-- Flatpickr CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
@@ -10,10 +10,10 @@
         body {
             font-family: Arial, sans-serif;
             text-align: center;
-            margin-top: 50px;
+            margin-top: 40px;
         }
 
-        input {
+        input, select {
             padding: 8px;
             width: 200px;
             font-size: 14px;
@@ -39,28 +39,48 @@
         }
 
         h3 {
-            margin-top: 15px;
+            margin-top: 10px;
         }
     </style>
 </head>
 <body>
 
-<h2>Date Difference Calculator</h2>
+<h2>Gold Loan Interest Calculator</h2>
 
+<!-- DATE SECTION -->
 <label>Start Date:</label><br>
 <input type="text" id="start" placeholder="dd/mm/yyyy"><br><br>
 
 <label>End Date:</label><br>
 <input type="text" id="end" placeholder="dd/mm/yyyy"><br><br>
 
+<!-- PRINCIPAL -->
+<label>Principal Amount:</label><br>
+<input type="number" id="principal" placeholder="Enter principal"><br><br>
+
+<!-- INTEREST DROPDOWN -->
+<label>Interest Rate (% per month):</label><br>
+<select id="interestRate">
+    <option value="1">1%</option>
+    <option value="1.5">1.5%</option>
+    <option value="2">2%</option>
+    <option value="2.5">2.5%</option>
+    <option value="3">3%</option>
+</select><br><br>
+
 <button onclick="calculate()" id="calcBtn">Calculate</button>
 <button onclick="clearAll()" id="clearBtn" disabled>Clear</button>
 
-<!-- RESULT 1 -->
-<h3 id="resultYMD"></h3>
+<hr>
 
-<!-- RESULT 2 -->
+<!-- DATE RESULTS -->
+<h3 id="resultYMD"></h3>
 <h3 id="resultMD"></h3>
+
+<!-- INTEREST RESULTS -->
+<h3 id="principalResult"></h3>
+<h3 id="interestResult"></h3>
+<h3 id="totalResult"></h3>
 
 <h4 id="selectedDates"></h4>
 
@@ -69,26 +89,15 @@
 
 <script>
 
-let today = new Date();
-
-// Clear results when changing dates
-function clearResults() {
-    document.getElementById("resultYMD").innerHTML = "";
-    document.getElementById("resultMD").innerHTML = "";
-    document.getElementById("selectedDates").innerHTML = "";
-}
-
-// Initialize Flatpickr
+// Initialize Date Picker
 const startPicker = flatpickr("#start", {
     dateFormat: "d/m/Y",
-    maxDate: "today",
-    onChange: clearResults
+    maxDate: "today"
 });
 
 const endPicker = flatpickr("#end", {
     dateFormat: "d/m/Y",
-    maxDate: "today",
-    onChange: clearResults
+    maxDate: "today"
 });
 
 // Convert dd/mm/yyyy to Date
@@ -109,9 +118,11 @@ function calculate() {
 
     let startInput = document.getElementById("start").value;
     let endInput = document.getElementById("end").value;
+    let principal = parseFloat(document.getElementById("principal").value);
+    let rate = parseFloat(document.getElementById("interestRate").value);
 
-    if (!startInput || !endInput) {
-        alert("Please select both dates");
+    if (!startInput || !endInput || !principal) {
+        alert("Please fill all fields");
         return;
     }
 
@@ -123,6 +134,7 @@ function calculate() {
         return;
     }
 
+    // Date Difference Calculation
     let years = end.getFullYear() - start.getFullYear();
     let months = end.getMonth() - start.getMonth();
     let days = end.getDate() - start.getDate();
@@ -138,22 +150,35 @@ function calculate() {
         months += 12;
     }
 
-    // RESULT 1 → Years, Months, Days
+    let totalMonths = (years * 12) + months;
+
+    // DISPLAY DATE RESULTS
     document.getElementById("resultYMD").innerHTML =
-        years + " Years, " +
+        "Duration: " + years + " Years, " +
         months + " Months, " +
         days + " Days";
 
-    // RESULT 2 → Total Months, Days
-    let totalMonths = (years * 12) + months;
-
     document.getElementById("resultMD").innerHTML =
-        totalMonths + " Months, " +
+        "Total: " + totalMonths + " Months, " +
         days + " Days";
 
     document.getElementById("selectedDates").innerHTML =
         "From: " + formatDate(start) +
         "<br>To: " + formatDate(end);
+
+    // INTEREST CALCULATION
+    let interest = (principal * rate * totalMonths) / 100;
+    let totalAmount = principal + interest;
+
+    // DISPLAY INTEREST RESULTS
+    document.getElementById("principalResult").innerHTML =
+        "Principal: ₹ " + principal.toFixed(2);
+
+    document.getElementById("interestResult").innerHTML =
+        "Interest: ₹ " + interest.toFixed(2);
+
+    document.getElementById("totalResult").innerHTML =
+        "Total Amount (Principal + Interest): ₹ " + totalAmount.toFixed(2);
 
     document.getElementById("clearBtn").disabled = false;
 }
@@ -161,7 +186,13 @@ function calculate() {
 function clearAll() {
     startPicker.clear();
     endPicker.clear();
-    clearResults();
+    document.getElementById("principal").value = "";
+    document.getElementById("principalResult").innerHTML = "";
+    document.getElementById("interestResult").innerHTML = "";
+    document.getElementById("totalResult").innerHTML = "";
+    document.getElementById("resultYMD").innerHTML = "";
+    document.getElementById("resultMD").innerHTML = "";
+    document.getElementById("selectedDates").innerHTML = "";
     document.getElementById("clearBtn").disabled = true;
 }
 
