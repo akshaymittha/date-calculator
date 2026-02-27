@@ -51,7 +51,7 @@
 
 <h2>Gold Loan Interest Calculator</h2>
 
-<!-- DATE SECTION -->
+<!-- DATE SECTION (UNCHANGED) -->
 <h3>Loan Duration Section</h3>
 
 <label>Start Date:</label><br>
@@ -68,11 +68,14 @@
 
 <hr>
 
-<!-- ROI SECTION -->
+<!-- ROI SECTION (MODIFIED) -->
 <h3>Interest Calculation Section</h3>
 
 <label>Principal Amount:</label><br>
 <input type="number" id="principal" placeholder="Enter principal"><br><br>
+
+<label>Loan Months:</label><br>
+<input type="number" id="manualMonths" placeholder="Enter months"><br><br>
 
 <label>Interest Rate (% per month):</label><br>
 <select id="interestRate">
@@ -95,21 +98,17 @@
 
 <script>
 
-// GLOBAL VARIABLE
-let totalMonthsForInterest = 0;
-
-// Date Pickers
+// Date Pickers (UNCHANGED)
 flatpickr("#start", { dateFormat: "d/m/Y", maxDate: "today" });
 flatpickr("#end", { dateFormat: "d/m/Y", maxDate: "today" });
 
-// Convert dd/mm/yyyy to Date
 function parseDate(input) {
     let parts = input.split("/");
     return new Date(parts[2], parts[1] - 1, parts[0]);
 }
 
 // ======================
-// DURATION CALCULATION
+// DURATION CALCULATION (UNCHANGED)
 // ======================
 
 function calculateDuration() {
@@ -145,15 +144,12 @@ function calculateDuration() {
         months += 12;
     }
 
-    // RESULT 1 → Years, Months, Days
     document.getElementById("resultYMD").innerHTML =
         years + " Years, " +
         months + " Months, " +
         days + " Days";
 
-    // RESULT 2 → Total Months, Days
     let totalMonths = (years * 12) + months;
-    totalMonthsForInterest = totalMonths + (days / 30);
 
     document.getElementById("resultMD").innerHTML =
         totalMonths + " Months, " +
@@ -165,29 +161,24 @@ function clearDuration() {
     document.getElementById("end").value = "";
     document.getElementById("resultYMD").innerHTML = "";
     document.getElementById("resultMD").innerHTML = "";
-    totalMonthsForInterest = 0;
 }
 
 // ======================
-// ROI CALCULATION
+// ROI CALCULATION (MODIFIED)
 // ======================
 
 function calculateInterest() {
 
     let principal = parseFloat(document.getElementById("principal").value);
+    let months = parseFloat(document.getElementById("manualMonths").value);
     let rate = parseFloat(document.getElementById("interestRate").value);
 
-    if (!principal) {
-        alert("Enter principal amount");
+    if (!principal || !months) {
+        alert("Enter principal and months");
         return;
     }
 
-    if (totalMonthsForInterest === 0) {
-        alert("Please calculate duration first");
-        return;
-    }
-
-    let interest = (principal * rate * totalMonthsForInterest) / 100;
+    let interest = (principal * rate * months) / 100;
     let totalAmount = principal + interest;
 
     document.getElementById("principalResult").innerHTML =
@@ -202,6 +193,7 @@ function calculateInterest() {
 
 function clearInterest() {
     document.getElementById("principal").value = "";
+    document.getElementById("manualMonths").value = "";
     document.getElementById("principalResult").innerHTML = "";
     document.getElementById("interestResult").innerHTML = "";
     document.getElementById("totalResult").innerHTML = "";
