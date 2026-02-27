@@ -39,7 +39,7 @@
         }
 
         h3 {
-            margin-top: 20px;
+            margin-top: 15px;
         }
     </style>
 </head>
@@ -56,7 +56,8 @@
 <button onclick="calculate()" id="calcBtn">Calculate</button>
 <button onclick="clearAll()" id="clearBtn" disabled>Clear</button>
 
-<h3 id="result"></h3>
+<h3 id="resultYMD"></h3>   <!-- Years Months Days -->
+<h3 id="resultMD"></h3>    <!-- Months Days -->
 <h4 id="selectedDates"></h4>
 
 <!-- Flatpickr JS -->
@@ -64,16 +65,14 @@
 
 <script>
 
-// Today's date
 let today = new Date();
 
-// Clear result when date changes
 function enableRecalculate() {
-    document.getElementById("result").innerHTML = "";
+    document.getElementById("resultYMD").innerHTML = "";
+    document.getElementById("resultMD").innerHTML = "";
     document.getElementById("selectedDates").innerHTML = "";
 }
 
-// Initialize Flatpickr
 const startPicker = flatpickr("#start", {
     dateFormat: "d/m/Y",
     maxDate: "today",
@@ -86,13 +85,11 @@ const endPicker = flatpickr("#end", {
     onChange: enableRecalculate
 });
 
-// Convert dd/mm/yyyy to Date
 function parseDate(input) {
     let parts = input.split("/");
     return new Date(parts[2], parts[1] - 1, parts[0]);
 }
 
-// Format Date to dd/mm/yyyy
 function formatDate(date) {
     let day = String(date.getDate()).padStart(2, '0');
     let month = String(date.getMonth() + 1).padStart(2, '0');
@@ -138,11 +135,16 @@ function calculate() {
         months += 12;
     }
 
-    // Convert everything into total months
+    // 🔹 Result 1 → Years, Months, Days
+    document.getElementById("resultYMD").innerHTML =
+        years + " Years, " +
+        months + " Months, " +
+        days + " Days";
+
+    // 🔹 Result 2 → Total Months, Days
     let totalMonths = (years * 12) + months;
 
-    // Display only Months and Days
-    document.getElementById("result").innerHTML =
+    document.getElementById("resultMD").innerHTML =
         totalMonths + " Months, " +
         days + " Days";
 
@@ -158,7 +160,8 @@ function clearAll() {
     startPicker.clear();
     endPicker.clear();
 
-    document.getElementById("result").innerHTML = "";
+    document.getElementById("resultYMD").innerHTML = "";
+    document.getElementById("resultMD").innerHTML = "";
     document.getElementById("selectedDates").innerHTML = "";
 
     document.getElementById("clearBtn").disabled = true;
