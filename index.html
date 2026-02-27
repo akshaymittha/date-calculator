@@ -57,6 +57,9 @@
 <button onclick="clearAll()" id="clearBtn" disabled>Clear</button>
 
 <h3 id="result"></h3>
+<h3 id="result"></h3>
+<h3 id="monthDayResult"></h3>  <!-- NEW -->
+<h4 id="selectedDates"></h4>l    
 <h4 id="selectedDates"></h4>
 
 <!-- Flatpickr JS -->
@@ -144,11 +147,7 @@ function calculate() {
         months + " Months, " +
         days + " Days";
 
-<h3 id="result"></h3>
-<h3 id="monthDayResult"></h3>  <!-- NEW -->
-<h4 id="selectedDates"></h4>l
 
-    
     document.getElementById("selectedDates").innerHTML =
         "From: " + formatDate(start) +
         "<br>To: " + formatDate(end);
