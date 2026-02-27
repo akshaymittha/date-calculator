@@ -53,11 +53,15 @@
 <label>End Date:</label><br>
 <input type="text" id="end" placeholder="dd/mm/yyyy"><br><br>
 
-<button onclick="calculate()" id="calcBtn">Calculate</button>
+<button onclick="calculate()">Calculate</button>
 <button onclick="clearAll()" id="clearBtn" disabled>Clear</button>
 
-<h3 id="resultYMD"></h3>   <!-- Years Months Days -->
-<h3 id="resultMD"></h3>    <!-- Months Days -->
+<!-- RESULT 1 -->
+<h3 id="resultYMD"></h3>
+
+<!-- RESULT 2 -->
+<h3 id="resultMD"></h3>
+
 <h4 id="selectedDates"></h4>
 
 <!-- Flatpickr JS -->
@@ -67,29 +71,33 @@
 
 let today = new Date();
 
-function enableRecalculate() {
+// Clear results when changing dates
+function clearResults() {
     document.getElementById("resultYMD").innerHTML = "";
     document.getElementById("resultMD").innerHTML = "";
     document.getElementById("selectedDates").innerHTML = "";
 }
 
+// Initialize Flatpickr
 const startPicker = flatpickr("#start", {
     dateFormat: "d/m/Y",
     maxDate: "today",
-    onChange: enableRecalculate
+    onChange: clearResults
 });
 
 const endPicker = flatpickr("#end", {
     dateFormat: "d/m/Y",
     maxDate: "today",
-    onChange: enableRecalculate
+    onChange: clearResults
 });
 
+// Convert dd/mm/yyyy to Date
 function parseDate(input) {
     let parts = input.split("/");
     return new Date(parts[2], parts[1] - 1, parts[0]);
 }
 
+// Format Date
 function formatDate(date) {
     let day = String(date.getDate()).padStart(2, '0');
     let month = String(date.getMonth() + 1).padStart(2, '0');
@@ -109,11 +117,6 @@ function calculate() {
 
     let start = parseDate(startInput);
     let end = parseDate(endInput);
-
-    if (end > today) {
-        alert("End date cannot be greater than today");
-        return;
-    }
 
     if (end < start) {
         alert("End date must be after Start date");
@@ -135,13 +138,13 @@ function calculate() {
         months += 12;
     }
 
-    // 🔹 Result 1 → Years, Months, Days
+    // RESULT 1 → Years, Months, Days
     document.getElementById("resultYMD").innerHTML =
         years + " Years, " +
         months + " Months, " +
         days + " Days";
 
-    // 🔹 Result 2 → Total Months, Days
+    // RESULT 2 → Total Months, Days
     let totalMonths = (years * 12) + months;
 
     document.getElementById("resultMD").innerHTML =
@@ -156,14 +159,9 @@ function calculate() {
 }
 
 function clearAll() {
-
     startPicker.clear();
     endPicker.clear();
-
-    document.getElementById("resultYMD").innerHTML = "";
-    document.getElementById("resultMD").innerHTML = "";
-    document.getElementById("selectedDates").innerHTML = "";
-
+    clearResults();
     document.getElementById("clearBtn").disabled = true;
 }
 
