@@ -15,7 +15,7 @@
 
         input, select {
             padding: 8px;
-            width: 200px;
+            width: 220px;
             font-size: 14px;
         }
 
@@ -40,6 +40,10 @@
 
         h3 {
             margin-top: 10px;
+        }
+
+        hr {
+            width: 60%;
         }
     </style>
 </head>
@@ -68,16 +72,20 @@
     <option value="3">3%</option>
 </select><br><br>
 
+<!-- MANUAL MONTH OVERRIDE -->
+<label>Manual Month Override (Optional):</label><br>
+<input type="number" step="0.25" id="manualMonth" placeholder="Leave blank for auto"><br><br>
+
 <button onclick="calculate()" id="calcBtn">Calculate</button>
 <button onclick="clearAll()" id="clearBtn" disabled>Clear</button>
 
 <hr>
 
-<!-- DATE RESULTS -->
-<h3 id="resultYMD"></h3>
-<h3 id="resultMD"></h3>
+<!-- DATE RESULT -->
+<h3 id="daysResult"></h3>
+<h3 id="effectiveMonthResult"></h3>
 
-<!-- INTEREST RESULTS -->
+<!-- FINANCIAL RESULT -->
 <h3 id="principalResult"></h3>
 <h3 id="interestResult"></h3>
 <h3 id="totalResult"></h3>
@@ -89,7 +97,7 @@
 
 <script>
 
-// Initialize Date Picker
+// Date Picker
 const startPicker = flatpickr("#start", {
     dateFormat: "d/m/Y",
     maxDate: "today"
@@ -120,9 +128,10 @@ function calculate() {
     let endInput = document.getElementById("end").value;
     let principal = parseFloat(document.getElementById("principal").value);
     let rate = parseFloat(document.getElementById("interestRate").value);
+    let manualMonth = parseFloat(document.getElementById("manualMonth").value);
 
     if (!startInput || !endInput || !principal) {
-        alert("Please fill all fields");
+        alert("Please fill all required fields");
         return;
     }
 
@@ -134,43 +143,49 @@ function calculate() {
         return;
     }
 
-    // Date Difference Calculation
-    let years = end.getFullYear() - start.getFullYear();
-    let months = end.getMonth() - start.getMonth();
-    let days = end.getDate() - start.getDate();
+    // Total Days Difference
+    let diffTime = end - start;
+    let totalDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
 
-    if (days < 0) {
-        months--;
-        let previousMonth = new Date(end.getFullYear(), end.getMonth(), 0);
-        days += previousMonth.getDate();
+    let effectiveMonths;
+
+    // If manual month provided → use it
+    if (!isNaN(manualMonth) && manualMonth > 0) {
+        effectiveMonths = manualMonth;
+    } else {
+
+        // -------- GOLD LOAN LOGIC --------
+
+        let fullMonths = Math.floor(totalDays / 30);
+        let remainingDays = totalDays % 30;
+
+        // If less than 1 month → count as 1 month
+        if (totalDays < 30) {
+            fullMonths = 1;
+            remainingDays = 0;
+        }
+
+        let extraMonthFraction = 0;
+
+        if (remainingDays > 0) {
+            let weeks = Math.ceil(remainingDays / 7);
+            extraMonthFraction = weeks * 0.25;
+        }
+
+        effectiveMonths = fullMonths + extraMonthFraction;
     }
 
-    if (months < 0) {
-        years--;
-        months += 12;
-    }
-
-    let totalMonths = (years * 12) + months;
-
-    // DISPLAY DATE RESULTS
-    document.getElementById("resultYMD").innerHTML =
-        "Duration: " + years + " Years, " +
-        months + " Months, " +
-        days + " Days";
-
-    document.getElementById("resultMD").innerHTML =
-        "Total: " + totalMonths + " Months, " +
-        days + " Days";
-
-    document.getElementById("selectedDates").innerHTML =
-        "From: " + formatDate(start) +
-        "<br>To: " + formatDate(end);
-
-    // INTEREST CALCULATION
-    let interest = (principal * rate * totalMonths) / 100;
+    // Interest Calculation
+    let interest = (principal * rate * effectiveMonths) / 100;
     let totalAmount = principal + interest;
 
-    // DISPLAY INTEREST RESULTS
+    // Display Results
+    document.getElementById("daysResult").innerHTML =
+        "Total Days: " + totalDays;
+
+    document.getElementById("effectiveMonthResult").innerHTML =
+        "Effective Loan Months: " + effectiveMonths.toFixed(2);
+
     document.getElementById("principalResult").innerHTML =
         "Principal: ₹ " + principal.toFixed(2);
 
@@ -180,6 +195,10 @@ function calculate() {
     document.getElementById("totalResult").innerHTML =
         "Total Amount (Principal + Interest): ₹ " + totalAmount.toFixed(2);
 
+    document.getElementById("selectedDates").innerHTML =
+        "From: " + formatDate(start) +
+        "<br>To: " + formatDate(end);
+
     document.getElementById("clearBtn").disabled = false;
 }
 
@@ -187,11 +206,12 @@ function clearAll() {
     startPicker.clear();
     endPicker.clear();
     document.getElementById("principal").value = "";
+    document.getElementById("manualMonth").value = "";
+    document.getElementById("daysResult").innerHTML = "";
+    document.getElementById("effectiveMonthResult").innerHTML = "";
     document.getElementById("principalResult").innerHTML = "";
     document.getElementById("interestResult").innerHTML = "";
     document.getElementById("totalResult").innerHTML = "";
-    document.getElementById("resultYMD").innerHTML = "";
-    document.getElementById("resultMD").innerHTML = "";
     document.getElementById("selectedDates").innerHTML = "";
     document.getElementById("clearBtn").disabled = true;
 }
