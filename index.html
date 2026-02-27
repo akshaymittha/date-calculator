@@ -63,8 +63,8 @@
 <button onclick="calculateDuration()" class="greenBtn">Calculate Duration</button>
 <button onclick="clearDuration()" class="redBtn">Clear Duration</button>
 
-<h3 id="daysResult"></h3>
-<h3 id="effectiveMonthResult"></h3>
+<h3 id="resultYMD"></h3>
+<h3 id="resultMD"></h3>
 
 <hr>
 
@@ -95,8 +95,8 @@
 
 <script>
 
-// GLOBAL VARIABLE (Used by ROI section)
-let effectiveMonths = 0;
+// GLOBAL VARIABLE
+let totalMonthsForInterest = 0;
 
 // Date Pickers
 flatpickr("#start", { dateFormat: "d/m/Y", maxDate: "today" });
@@ -130,38 +130,42 @@ function calculateDuration() {
         return;
     }
 
-    let totalDays = Math.floor((end - start) / (1000 * 60 * 60 * 24));
+    let years = end.getFullYear() - start.getFullYear();
+    let months = end.getMonth() - start.getMonth();
+    let days = end.getDate() - start.getDate();
 
-    let fullMonths = Math.floor(totalDays / 30);
-    let remainingDays = totalDays % 30;
-
-    if (totalDays < 30) {
-        fullMonths = 1;
-        remainingDays = 0;
+    if (days < 0) {
+        months--;
+        let previousMonth = new Date(end.getFullYear(), end.getMonth(), 0);
+        days += previousMonth.getDate();
     }
 
-    let extraMonthFraction = 0;
-
-    if (remainingDays > 0) {
-        let weeks = Math.ceil(remainingDays / 7);
-        extraMonthFraction = weeks * 0.25;
+    if (months < 0) {
+        years--;
+        months += 12;
     }
 
-    effectiveMonths = fullMonths + extraMonthFraction;
+    // RESULT 1 → Years, Months, Days
+    document.getElementById("resultYMD").innerHTML =
+        years + " Years, " +
+        months + " Months, " +
+        days + " Days";
 
-    document.getElementById("daysResult").innerHTML =
-        "Total Days: " + totalDays;
+    // RESULT 2 → Total Months, Days
+    let totalMonths = (years * 12) + months;
+    totalMonthsForInterest = totalMonths + (days / 30);
 
-    document.getElementById("effectiveMonthResult").innerHTML =
-        "Effective Loan Months: " + effectiveMonths.toFixed(2);
+    document.getElementById("resultMD").innerHTML =
+        totalMonths + " Months, " +
+        days + " Days";
 }
 
 function clearDuration() {
     document.getElementById("start").value = "";
     document.getElementById("end").value = "";
-    document.getElementById("daysResult").innerHTML = "";
-    document.getElementById("effectiveMonthResult").innerHTML = "";
-    effectiveMonths = 0;
+    document.getElementById("resultYMD").innerHTML = "";
+    document.getElementById("resultMD").innerHTML = "";
+    totalMonthsForInterest = 0;
 }
 
 // ======================
@@ -178,12 +182,12 @@ function calculateInterest() {
         return;
     }
 
-    if (effectiveMonths === 0) {
+    if (totalMonthsForInterest === 0) {
         alert("Please calculate duration first");
         return;
     }
 
-    let interest = (principal * rate * effectiveMonths) / 100;
+    let interest = (principal * rate * totalMonthsForInterest) / 100;
     let totalAmount = principal + interest;
 
     document.getElementById("principalResult").innerHTML =
